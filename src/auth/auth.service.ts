@@ -9,7 +9,7 @@ import { randomInt, randomUUID } from 'crypto';
 import { Cache } from 'cache-manager';
 import { otpCache } from './interface/otpCache.interface';
 import { JwtService } from '@nestjs/jwt';
-import { User } from './interface/user.interface';
+import { UserInterface } from './interface/user.interface';
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,7 +27,7 @@ export class AuthService {
     const otp = randomInt(100000, 1000000);
     const otpId = randomUUID();
 
-    this.cacheManager.set(otpId, { otp, user }, 1000  * 60 * 5); // set for 5 minutes
+    this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
     return { otpId, otp };
   }
 
@@ -40,14 +40,14 @@ export class AuthService {
     if (otpNew === otp) {
       this.cacheManager.del(otpId);
       const { accessToken, refreshToken } = this.generateToken(user);
-      this.cacheManager.set(refreshToken, user, 1000* 60 * 60 * 24 * 30); // set for 30 days
+      this.cacheManager.set(refreshToken, user, 1000 * 60 * 60 * 24 * 30); // set for 30 days
       return { accessToken, refreshToken };
     }
     throw new UnauthorizedException('Invalid OTP');
   }
 
   async refresh(refreshToken: string) {
-    const user = <User>await this.cacheManager.get(refreshToken);
+    const user = <UserInterface>await this.cacheManager.get(refreshToken);
     if (user === undefined) {
       throw new UnauthorizedException('Invalid refresh token');
     }
@@ -60,7 +60,7 @@ export class AuthService {
 
   generateToken(user: { id: number; roomId: number }) {
     const accessToken = this.jwtService.sign(user, {
-      expiresIn: '15m',
+      expiresIn: '30d',
       secret: 'secret',
     });
 
