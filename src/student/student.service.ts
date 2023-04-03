@@ -18,11 +18,23 @@ export class StudentService {
                 name: true,
               },
             },
-            //CleaningJobs: true,
+            CleaningJobs: true,
           },
         },
       },
-      //include: { Room: { select: { Student: true } } },
+    });
+  }
+
+  async cleaning(roomId: number, time: Date) {
+    return await this.prismaService.cleaningJob.create({
+      data: {
+        time,
+        Room: {
+          connect: {
+            id: roomId,
+          },
+        },
+      },
     });
   }
 }

@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { redisStore } from 'cache-manager-redis-yet';
 import { PrismaModule } from './prisma/prisma.module';
 import { StudentModule } from './student/student.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { StudentModule } from './student/student.module';
     }),
     PrismaModule,
     StudentModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

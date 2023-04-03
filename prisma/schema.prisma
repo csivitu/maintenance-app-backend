@@ -28,7 +28,6 @@ model Room {
 
 model CleaningJob {
   id        Int      @id @default(autoincrement())
-  name      String
   createdAt DateTime @default(now())
   time      DateTime
   Room      Room     @relation(fields: [roomId], references: [id])
