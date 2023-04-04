@@ -1,6 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString } from 'class-validator';
 
 export class CleaningJobDto {
-  @IsDateString() //generate datestring for testing
+  @ApiProperty()
+  @IsDateString() 
   time: Date;
 }

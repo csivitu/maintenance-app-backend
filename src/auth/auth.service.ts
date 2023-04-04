@@ -31,6 +31,19 @@ export class AuthService {
     return { otpId, otp };
   }
 
+  async staffLogin(email: string) {
+    const user = await this.prisma.staff.findUniqueOrThrow({
+      where: { email },
+      select: { id: true, role: true },
+    });
+
+    const otp = randomInt(100000, 1000000);
+    const otpId = randomUUID();
+
+    this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
+    return { otpId, otp };
+  }
+
   async verifyOtp(otpId: string, otpNew: number) {
     const otpObject = <otpCache>await this.cacheManager.get(otpId);
     if (otpObject === undefined) {
@@ -58,7 +71,7 @@ export class AuthService {
     return { accessToken, refreshToken: newRefreshToken };
   }
 
-  generateToken(user: { id: number; roomId: number }) {
+  generateToken(user: { id: number; roomId: number } | { id: number, role: string}) {
     const accessToken = this.jwtService.sign(user, {
       expiresIn: '30d',
       secret: 'secret',

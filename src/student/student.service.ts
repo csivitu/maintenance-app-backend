@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class StudentService {
   constructor(private readonly prismaService: PrismaService) {}
-  async getStudents(id: number) {
+  async getStudents(id: number | undefined) {
     return await this.prismaService.student.findUniqueOrThrow({
       where: { id },
       select: {

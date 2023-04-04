@@ -4,7 +4,10 @@ import { StudentService } from './student.service';
 import { User } from '../auth/auth.decorator';
 import { UserInterface } from 'src/auth/interface/user.interface';
 import { CleaningJobDto } from './dto/cleaningJob.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('Student')
 @UseGuards(JwtGuard)
 @Controller('student')
 export class StudentController {

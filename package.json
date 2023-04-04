@@ -24,6 +24,7 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.0.3",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/swagger": "^6.3.0",
     "@prisma/client": "^4.11.0",
     "cache-manager": "^5.2.0",
     "cache-manager-redis-yet": "^4.1.1",
