@@ -29,7 +29,7 @@ model Room {
 model CleaningJob {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  time      DateTime
+  time      DateTime @db.Timestamp(0)
   Room      Room     @relation(fields: [roomId], references: [id])
   roomId    Int
   approved  Boolean  @default(false)
