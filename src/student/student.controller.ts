@@ -18,11 +18,4 @@ export class StudentController {
     return await this.studentService.getStudents(user.id);
   }
 
-  @Post('cleaning')
-  async cleaning(
-    @User() user: UserInterface,
-    @Body() cleaningJobDto: CleaningJobDto,
-  ) {
-    return await this.studentService.cleaning(user.roomId, cleaningJobDto.time);
-  }
 }

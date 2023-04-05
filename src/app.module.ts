@@ -3,6 +3,7 @@ import { AuthModule } from './auth/auth.module';
 import { redisStore } from 'cache-manager-redis-yet';
 import { PrismaModule } from './prisma/prisma.module';
 import { StudentModule } from './student/student.module';
+import { CleaningModule } from './cleaning/cleaning.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { StudentModule } from './student/student.module';
     }),
     PrismaModule,
     StudentModule,
+    CleaningModule,
   ],
 })
 export class AppModule {}

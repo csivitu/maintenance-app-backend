@@ -24,17 +24,4 @@ export class StudentService {
       },
     });
   }
-
-  async cleaning(roomId: number, time: Date) {
-    return await this.prismaService.cleaningJob.create({
-      data: {
-        time,
-        Room: {
-          connect: {
-            id: roomId,
-          },
-        },
-      },
-    });
-  }
 }
