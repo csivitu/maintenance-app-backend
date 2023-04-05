@@ -1,11 +1,10 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/auth/auth.decorator';
 import { UserInterface } from 'src/auth/interface/user.interface';
 import { CleaningJobDto } from 'src/student/dto/cleaningJob.dto';
 import { JwtGuard } from '../auth/auth.guard';
 import { CleaningService } from './cleaning.service';
-
 
 @ApiBearerAuth()
 @ApiTags('Cleaning')
@@ -20,5 +19,15 @@ export class CleaningController {
     @Body() cleaningJobDto: CleaningJobDto,
   ) {
     return await this.cleaningService.newJob(user.roomId, cleaningJobDto.time);
+  }
+
+  @Get('cleaners')
+  async getCleaners(@User() user: UserInterface) {
+    return await this.cleaningService.getCleaners(user.id);
+  }
+
+  @Get('non-assigned-jobs')
+  async getNonAssignedJobs(@User() user: UserInterface) {
+    return await this.cleaningService.getNonAssignedJobs(user.id);
   }
 }
