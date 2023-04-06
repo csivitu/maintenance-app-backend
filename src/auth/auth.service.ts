@@ -19,23 +19,30 @@ export class AuthService {
   ) {}
 
   async login(email: string, userType: string) {
-    let user: UserInterface;
-    if (userType === 'student') {
-      user = await this.prisma.student.findUniqueOrThrow({
-        where: { email },
-        select: { id: true, roomId: true },
-      });
-    } else {
-      user = await this.prisma.staff.findUniqueOrThrow({
-        where: { email },
-        select: { id: true, role: true },
-      });
-    }
-    const otp = randomInt(100000, 1000000);
-    const otpId = randomUUID();
+    try {
+      let user: UserInterface;
+      if (userType === 'student') {
+        user = await this.prisma.student.findUniqueOrThrow({
+          where: { email },
+          select: { id: true, roomId: true },
+        });
+      } else {
+        user = await this.prisma.staff.findUniqueOrThrow({
+          where: { email },
+          select: { id: true, role: true },
+        });
+      }
+      const otp = randomInt(100000, 1000000);
+      const otpId = randomUUID();
 
-    this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
-    return { otpId, otp };
+      this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
+      return { otpId, otp };
+    } catch (error) {
+      if (error.name == 'NotFoundError') {
+        throw new UnauthorizedException('Invalid Email');
+      }
+      throw error;
+    }
   }
 
   async verifyOtp(otpId: string, otpNew: number) {

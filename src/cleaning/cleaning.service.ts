@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AssignJobDto } from './dto/assignJob.dto';
 
@@ -13,64 +13,96 @@ export class CleaningService {
   }
 
   async getCleaners(id: number) {
-    const { block } = await this.prismaService.staff.findUniqueOrThrow({
-      where: { id },
-      select: { block: true },
-    });
+    try {
+      const { block } = await this.prismaService.staff.findUniqueOrThrow({
+        where: { id },
+        select: { block: true },
+      });
 
-    return await this.prismaService.staff.findMany({
-      where: { role: 'cleaner', block },
-      select: { id: true, name: true },
-    });
+      return await this.prismaService.staff.findMany({
+        where: { role: 'cleaner', block },
+        select: { id: true, name: true },
+      });
+    } catch (error) {
+      if (error.name == 'NotFoundError') {
+        throw new UnauthorizedException('Invalid Token');
+      }
+      throw error;
+    }
   }
 
   async getNonAssignedJobs(id: number) {
-    const { block } = await this.prismaService.staff.findUniqueOrThrow({
-      where: { id },
-      select: { block: true },
-    });
+    try {
+      const { block } = await this.prismaService.staff.findUniqueOrThrow({
+        where: { id },
+        select: { block: true },
+      });
 
-    return await this.prismaService.cleaningJob.findMany({
-      where: { Room: { block }, Staff: null, completed: false },
-      select: { id: true, time: true, Room: { select: { number: true } } },
-      orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
-    });
+      return await this.prismaService.cleaningJob.findMany({
+        where: { Room: { block }, Staff: null, completed: false },
+        select: {
+          id: true,
+          time: true,
+          Room: { select: { number: true } },
+        },
+        orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
+      });
+    } catch (error) {
+      if (error.name == 'NotFoundError') {
+        throw new UnauthorizedException('Invalid Token');
+      }
+      throw error
+    }
   }
 
   async getAssignedJobs(id: number) {
-    const { block } = await this.prismaService.staff.findUniqueOrThrow({
-      where: { id },
-      select: { block: true },
-    });
+    try {
+      const { block } = await this.prismaService.staff.findUniqueOrThrow({
+        where: { id },
+        select: { block: true },
+      });
 
-    return await this.prismaService.cleaningJob.findMany({
-      where: { Room: { block }, completed: false, NOT: { Staff: null } },
-      select: {
-        id: true,
-        time: true,
-        Room: { select: { number: true } },
-        Staff: { select: { name: true } },
-      },
-      orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
-    });
+      return await this.prismaService.cleaningJob.findMany({
+        where: { Room: { block }, completed: false, NOT: { Staff: null } },
+        select: {
+          id: true,
+          time: true,
+          Room: { select: { number: true } },
+          Staff: { select: { name: true } },
+        },
+        orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
+      });
+    } catch (error) {
+      if (error.name == 'NotFoundError') {
+        throw new UnauthorizedException('Invalid Token');
+      }
+      throw error
+    }
   }
 
   async getCompletedJobs(id: number) {
-    const { block } = await this.prismaService.staff.findUniqueOrThrow({
-      where: { id },
-      select: { block: true },
-    });
+    try {
+      const { block } = await this.prismaService.staff.findUniqueOrThrow({
+        where: { id },
+        select: { block: true },
+      });
 
-    return await this.prismaService.cleaningJob.findMany({
-      where: { Room: { block }, completed: true },
-      select: {
-        id: true,
-        time: true,
-        Room: { select: { number: true } },
-        Staff: { select: { name: true } },
-      },
-      orderBy: [{ time: 'desc' }, { createdAt: 'desc' }],
-    });
+      return await this.prismaService.cleaningJob.findMany({
+        where: { Room: { block }, completed: true },
+        select: {
+          id: true,
+          time: true,
+          Room: { select: { number: true } },
+          Staff: { select: { name: true } },
+        },
+        orderBy: [{ time: 'desc' }, { createdAt: 'desc' }],
+      });
+    } catch (error) {
+      if (error.name == 'NotFoundError') {
+        throw new UnauthorizedException('Invalid Token');
+      }
+      throw error
+    }
   }
 
   async assignJob(id: number, assignJobDto: AssignJobDto) {
