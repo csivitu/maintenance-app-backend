@@ -34,23 +34,22 @@ model CleaningJob {
   roomId    Int
   assigned  Boolean  @default(false)
   completed Boolean  @default(false)
-  Staff     Staff?  @relation(fields: [staffId], references: [id])
-  staffId   Int? 
-
+  Staff     Staff?   @relation(fields: [staffId], references: [id])
+  staffId   Int?
 }
 
 model Staff {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  role      Role
-  phone     String
-  block    String
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  role         Role
+  phone        String
+  block        String
   CleaningJobs CleaningJob[]
 }
 
 enum Role {
   superAdmin
   cleaner
-  cleaningAdmin  
+  cleaningAdmin
 }

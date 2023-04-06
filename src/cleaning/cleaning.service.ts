@@ -31,9 +31,9 @@ export class CleaningService {
     });
 
     return await this.prismaService.cleaningJob.findMany({
-      where: { Room: { block }, Staff: null },
+      where: { Room: { block }, Staff: null, completed: false },
       select: { id: true, time: true, Room: { select: { number: true } } },
-      orderBy: { time: 'asc', createdAt: 'asc' },
+      orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
     });
   }
 
@@ -51,7 +51,7 @@ export class CleaningService {
         Room: { select: { number: true } },
         Staff: { select: { name: true } },
       },
-      orderBy: { time: 'asc', createdAt: 'asc' },
+      orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
     });
   }
 
@@ -69,7 +69,7 @@ export class CleaningService {
         Room: { select: { number: true } },
         Staff: { select: { name: true } },
       },
-      orderBy: { time: 'desc', createdAt: 'desc' },
+      orderBy: [{ time: 'desc' }, { createdAt: 'desc' }],
     });
   }
 
@@ -84,7 +84,7 @@ export class CleaningService {
 
   async completeJob(roomId: number, jobId: number) {
     return await this.prismaService.cleaningJob.updateMany({
-      where: { id: jobId, Room: { id: roomId }},
+      where: { id: jobId, Room: { id: roomId } },
       data: { completed: true },
     });
   }

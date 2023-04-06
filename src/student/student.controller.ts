@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { JwtGuard } from '../auth/auth.guard';
+import { JwtGuard } from '../auth/guards/auth.guard';
 import { StudentService } from './student.service';
 import { User } from '../auth/auth.decorator';
 import { UserInterface } from 'src/auth/interface/user.interface';
@@ -17,5 +17,4 @@ export class StudentController {
   async getStudents(@User() user: UserInterface) {
     return await this.studentService.getStudents(user.id);
   }
-
 }
