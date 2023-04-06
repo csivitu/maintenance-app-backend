@@ -11,6 +11,7 @@ import { otpCache } from './interface/otpCache.interface';
 import { JwtService } from '@nestjs/jwt';
 import { UserInterface } from './interface/user.interface';
 import { MailService } from '../mail/mail.service';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,6 +19,7 @@ export class AuthService {
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
+    private readonly configService: ConfigService,
   ) {}
 
   async login(email: string, userType: string) {
@@ -34,7 +36,7 @@ export class AuthService {
           select: { id: true, role: true },
         });
       }
-      const otp = randomInt(100000, 1000000);
+      const otp = randomInt(100000, 1000000); // 6 digit otp
       const otpId = randomUUID();
 
       this.mailService.sendUsersOtp(email, otp);
@@ -57,7 +59,7 @@ export class AuthService {
     const { otp, user } = otpObject;
     if (otpNew === otp) {
       this.cacheManager.del(otpId);
-      const { accessToken, refreshToken } = this.generateToken(user);
+      const { accessToken, refreshToken } = await this.generateToken(user);
       this.cacheManager.set(refreshToken, user, 1000 * 60 * 60 * 24 * 30); // set for 30 days
       return { accessToken, refreshToken };
     }
@@ -71,20 +73,20 @@ export class AuthService {
     }
     this.cacheManager.del(refreshToken);
     const { accessToken, refreshToken: newRefreshToken } =
-      this.generateToken(user);
+      await this.generateToken(user);
     this.cacheManager.set(newRefreshToken, user, 60 * 60 * 24 * 30 * 1000); // set for 30 days
     return { accessToken, refreshToken: newRefreshToken };
   }
 
-  generateToken(user: UserInterface) {
+  async generateToken(user: UserInterface) {
     const accessToken = this.jwtService.sign(user, {
-      expiresIn: '30d',
-      secret: 'secret',
+      expiresIn: await this.configService.get('ACCESS_TOKEN_EXPIRY'),
+      secret: await this.configService.get('ACCESS_TOKEN_SECRET'),
     });
 
     const refreshToken = this.jwtService.sign(user, {
-      expiresIn: '30d',
-      secret: 'secret',
+      expiresIn: await this.configService.get('REFRESH_TOKEN_EXPIRY'),
+      secret: await this.configService.get('REFRESH_TOKEN_SECRET'),
     });
 
     return { accessToken, refreshToken };

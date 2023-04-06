@@ -33,6 +33,6 @@ import { ConfigService } from '@nestjs/config';
     }),
   ],
   providers: [MailService],
-  exports: [MailService], // 👈 export for DI
+  exports: [MailService], 
 })
 export class MailModule {}
