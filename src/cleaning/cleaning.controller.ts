@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Post, SetMetadata, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  SetMetadata,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/auth/auth.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserInterface } from 'src/auth/interface/user.interface';
 import { CleaningJobDto } from 'src/student/dto/cleaningJob.dto';
 import { JwtGuard } from '../auth/guards/auth.guard';
@@ -20,29 +28,42 @@ export class CleaningController {
     @User() user: UserInterface,
     @Body() cleaningJobDto: CleaningJobDto,
   ) {
-    return await this.cleaningService.newJob(<number>user.roomId, cleaningJobDto.time);
+    return await this.cleaningService.newJob(
+      <number>user.roomId,
+      cleaningJobDto.time,
+    );
   }
 
+  @SetMetadata('roles', ['cleaningAdmin'])
+  @UseGuards(RolesGuard)
   @Get('cleaners')
   async getCleaners(@User() user: UserInterface) {
     return await this.cleaningService.getCleaners(user.id);
   }
 
+  @SetMetadata('roles', ['cleaningAdmin'])
+  @UseGuards(RolesGuard)
   @Get('non-assigned-jobs')
   async getNonAssignedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getNonAssignedJobs(user.id);
   }
 
+  @SetMetadata('roles', ['cleaningAdmin'])
+  @UseGuards(RolesGuard)
   @Get('assigned-jobs')
   async getAssignedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getAssignedJobs(user.id);
   }
 
+  @SetMetadata('roles', ['cleaningAdmin'])
+  @UseGuards(RolesGuard)
   @Get('completed-jobs')
   async getCompletedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getCompletedJobs(user.id);
   }
 
+  @SetMetadata('roles', ['cleaningAdmin'])
+  @UseGuards(RolesGuard)
   @Post('assign-job')
   async assignJob(
     @User() user: UserInterface,
