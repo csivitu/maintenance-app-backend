@@ -4,9 +4,14 @@ import { redisStore } from 'cache-manager-redis-yet';
 import { PrismaModule } from './prisma/prisma.module';
 import { StudentModule } from './student/student.module';
 import { CleaningModule } from './cleaning/cleaning.module';
+import { MailModule } from './mail/mail.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     AuthModule,
     // CacheModule.registerAsync({
     //   useFactory: async () => {
@@ -26,7 +31,7 @@ import { CleaningModule } from './cleaning/cleaning.module';
       store: redisStore,
       ttl: 60 * 1 * 1000,
       socket: {
-        host: 'redis',
+        host: 'localhost',
         port: 6379,
       },
       isGlobal: true,
@@ -34,6 +39,7 @@ import { CleaningModule } from './cleaning/cleaning.module';
     PrismaModule,
     StudentModule,
     CleaningModule,
+    MailModule,
   ],
 })
 export class AppModule {}

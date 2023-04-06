@@ -10,12 +10,15 @@ import { Cache } from 'cache-manager';
 import { otpCache } from './interface/otpCache.interface';
 import { JwtService } from '@nestjs/jwt';
 import { UserInterface } from './interface/user.interface';
+import { MailService } from '../mail/mail.service';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async login(email: string, userType: string) {
@@ -35,8 +38,10 @@ export class AuthService {
       const otp = randomInt(100000, 1000000);
       const otpId = randomUUID();
 
+      this.mailService.sendUsersOtp(email, otp);
+
       this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
-      return { otpId, otp };
+      return { otpId };
     } catch (error) {
       if (error.name == 'NotFoundError') {
         throw new UnauthorizedException('Invalid Email');
