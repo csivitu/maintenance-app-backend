@@ -11,7 +11,6 @@ import { otpCache } from './interface/otpCache.interface';
 import { JwtService } from '@nestjs/jwt';
 import { UserInterface } from './interface/user.interface';
 import { MailService } from '../mail/mail.service';
-import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(

@@ -9,6 +9,7 @@ export class CleaningService {
   async newJob(roomId: number, time: Date) {
     return await this.prismaService.cleaningJob.create({
       data: { time, Room: { connect: { id: roomId } } },
+      select: { id: true, time: true },
     });
   }
 
@@ -51,7 +52,7 @@ export class CleaningService {
       if (error.name == 'NotFoundError') {
         throw new UnauthorizedException('Invalid Token');
       }
-      throw error
+      throw error;
     }
   }
 
@@ -76,7 +77,7 @@ export class CleaningService {
       if (error.name == 'NotFoundError') {
         throw new UnauthorizedException('Invalid Token');
       }
-      throw error
+      throw error;
     }
   }
 
@@ -101,7 +102,7 @@ export class CleaningService {
       if (error.name == 'NotFoundError') {
         throw new UnauthorizedException('Invalid Token');
       }
-      throw error
+      throw error;
     }
   }
 
@@ -111,13 +112,21 @@ export class CleaningService {
     return await this.prismaService.cleaningJob.update({
       where: { id: jobId },
       data: { Staff: { connect: { id: staffId } } },
+      select: {
+        id: true,
+        time: true,
+        Room: { select: { number: true } },
+        Staff: { select: { name: true } },
+      },
     });
   }
 
   async completeJob(roomId: number, jobId: number) {
-    return await this.prismaService.cleaningJob.updateMany({
+    await this.prismaService.cleaningJob.updateMany({
       where: { id: jobId, Room: { id: roomId } },
       data: { completed: true },
     });
+
+    return 'Completed';
   }
 }
