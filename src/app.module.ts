@@ -19,14 +19,16 @@ import { CleaningModule } from './cleaning/cleaning.module';
     //         },
     //       }),
     //       isGlobal: true,
-    //     };        
+    //     };
     //   },
     // }),
     CacheModule.register({
       store: redisStore,
       ttl: 60 * 1 * 1000,
-      host: 'localhost',
-      port: 6379,
+      socket: {
+        host: 'redis',
+        port: 6379,
+      },
       isGlobal: true,
     }),
     PrismaModule,

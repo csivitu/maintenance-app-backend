@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  nest-api:
+    container_name: maintenance-app-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+      - redis
+    links:
+      - postgres
+      - redis
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres
+    container_name: postgres-maintenance-app
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis
+    container_name: redis-maintenance-app
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
+volumes:
+  postgres:
+    name: nest-db
+    driver: local
+  redis:
+    name: redis-db
+    driver: local

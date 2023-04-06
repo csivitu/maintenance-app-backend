@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+dist
+.dockerignore
+Dockerfile
+.eslintrc.js
+.gitignore
+.prettierrc.js
+docker-compose.yml
