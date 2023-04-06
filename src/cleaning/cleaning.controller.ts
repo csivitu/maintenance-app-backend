@@ -20,7 +20,7 @@ export class CleaningController {
     @User() user: UserInterface,
     @Body() cleaningJobDto: CleaningJobDto,
   ) {
-    return await this.cleaningService.newJob(user.roomId, cleaningJobDto.time);
+    return await this.cleaningService.newJob(<number>user.roomId, cleaningJobDto.time);
   }
 
   @Get('cleaners')
@@ -57,7 +57,7 @@ export class CleaningController {
     @Body() completeJobDto: CompleteJobDto,
   ) {
     return await this.cleaningService.completeJob(
-      user.roomId,
+      <number>user.roomId,
       completeJobDto.jobId,
     );
   }

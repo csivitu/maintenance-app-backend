@@ -18,25 +18,19 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(email: string) {
-    const user = await this.prisma.student.findUniqueOrThrow({
-      where: { email },
-      select: { id: true, roomId: true },
-    });
-
-    const otp = randomInt(100000, 1000000);
-    const otpId = randomUUID();
-
-    this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
-    return { otpId, otp };
-  }
-
-  async staffLogin(email: string) {
-    const user = await this.prisma.staff.findUniqueOrThrow({
-      where: { email },
-      select: { id: true, role: true },
-    });
-
+  async login(email: string, userType: string) {
+    let user: UserInterface;
+    if (userType === 'student') {
+      user = await this.prisma.student.findUniqueOrThrow({
+        where: { email },
+        select: { id: true, roomId: true },
+      });
+    } else {
+      user = await this.prisma.staff.findUniqueOrThrow({
+        where: { email },
+        select: { id: true, role: true },
+      });
+    }
     const otp = randomInt(100000, 1000000);
     const otpId = randomUUID();
 
@@ -71,7 +65,7 @@ export class AuthService {
     return { accessToken, refreshToken: newRefreshToken };
   }
 
-  generateToken(user: { id: number; roomId: number } | { id: number, role: string}) {
+  generateToken(user: UserInterface) {
     const accessToken = this.jwtService.sign(user, {
       expiresIn: '30d',
       secret: 'secret',

@@ -12,12 +12,12 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    return await this.authService.login(loginDto.email);
+    return await this.authService.login(loginDto.email, "student");
   }
 
   @Post('staff-login')
   async staffLogin(@Body() loginDto: LoginDto) {
-    return await this.authService.staffLogin(loginDto.email);
+    return await this.authService.login(loginDto.email, "staff");
   }
 
   @Post('otp')
