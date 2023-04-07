@@ -9,7 +9,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/auth/auth.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { UserInterface } from 'src/auth/interface/user.interface';
+import { UserInterface } from 'src/auth/interfaces/user.interface';
 import { CleaningJobDto } from 'src/student/dto/cleaningJob.dto';
 import { JwtGuard } from '../auth/guards/auth.guard';
 import { CleaningService } from './cleaning.service';

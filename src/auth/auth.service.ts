@@ -7,9 +7,9 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { randomInt, randomUUID } from 'crypto';
 import { Cache } from 'cache-manager';
-import { otpCache } from './interface/otpCache.interface';
+import { otpCache } from './interfaces/otpCache.interface';
 import { JwtService } from '@nestjs/jwt';
-import { UserInterface } from './interface/user.interface';
+import { UserInterface } from './interfaces/user.interface';
 import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
 @Injectable()

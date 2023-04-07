@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/auth.guard';
 import { StudentService } from './student.service';
 import { User } from '../auth/auth.decorator';
-import { UserInterface } from 'src/auth/interface/user.interface';
+import { UserInterface } from 'src/auth/interfaces/user.interface';
 import { CleaningJobDto } from './dto/cleaningJob.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
