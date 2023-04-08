@@ -4,7 +4,9 @@ import { StudentService } from './student.service';
 import { User } from '../auth/auth.decorator';
 import { UserInterface } from 'src/auth/interfaces/user.interface';
 import { CleaningJobDto } from './dto/cleaningJob.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { StudentModule } from './student.module';
+import { StudentSuccessfulResponse } from './responses/student.response';
 
 @ApiBearerAuth()
 @ApiTags('Student')
@@ -13,6 +15,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
+  @ApiResponse(StudentSuccessfulResponse)
   @Get()
   async getStudents(@User() user: UserInterface) {
     return await this.studentService.getStudents(user.id);
