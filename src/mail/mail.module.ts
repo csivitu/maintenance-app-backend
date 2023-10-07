@@ -2,7 +2,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
-import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
 
@@ -15,15 +14,15 @@ import { ConfigService } from '@nestjs/config';
           service: 'gmail',
           auth: {
             user: <string>configService.get('MAIL_USER'),
-            pass: <string>configService.get('MAIL_PASS'),
+            pass: <string>configService.get('MAIL_PASSWORD'),
           },
         },
         defaults: {
-          from: '"Maintenance App" <kaushalrathi24@gmail.com>',
+          from: '"Maintenance App" <tomoyoko959@gmail.com>',
         },
         template: {
-          dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(), 
+          dir: 'dist/mail/templates',
+          adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
           },
@@ -33,6 +32,6 @@ import { ConfigService } from '@nestjs/config';
     }),
   ],
   providers: [MailService],
-  exports: [MailService], 
+  exports: [MailService],
 })
 export class MailModule {}

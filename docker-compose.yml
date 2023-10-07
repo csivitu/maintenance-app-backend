@@ -37,6 +37,7 @@ services:
     volumes:
       - redis:/data
 
+
 volumes:
   postgres:
     name: nest-db
@@ -44,3 +45,4 @@ volumes:
   redis:
     name: redis-db
     driver: local
+

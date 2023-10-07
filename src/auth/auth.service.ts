@@ -40,8 +40,13 @@ export class AuthService {
       const otpId = randomUUID();
 
       this.mailService.sendUsersOtp(email, otp);
+      console.log(this.configService.get('REDIS_PASSWORD'));
+      console.log(this.configService.get('REDIS_HOST'));
+      console.log(this.configService.get('REDIS_PORT'));
 
       this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
+      const otpObject = <otpCache>await this.cacheManager.get(otpId);
+      console.log(otpObject);
       return { otpId };
     } catch (error) {
       if (error.name == 'NotFoundError') {
@@ -60,7 +65,7 @@ export class AuthService {
     if (otpNew === otp) {
       this.cacheManager.del(otpId);
       const { accessToken, refreshToken } = await this.generateToken(user);
-      this.cacheManager.set(refreshToken, user, 1000 * 60 * 60 * 24 * 30); // set for 30 days
+      this.cacheManager.set(refreshToken, user, 1000 * 60 * 60 * 24 * 30); //* set for 30 days
       return { accessToken, refreshToken };
     }
     throw new UnauthorizedException('Invalid OTP');
@@ -74,7 +79,7 @@ export class AuthService {
     this.cacheManager.del(refreshToken);
     const { accessToken, refreshToken: newRefreshToken } =
       await this.generateToken(user);
-    this.cacheManager.set(newRefreshToken, user, 60 * 60 * 24 * 30 * 1000); // set for 30 days
+    this.cacheManager.set(newRefreshToken, user, 60 * 60 * 24 * 30 * 1000); //* set for 30 days
     return { accessToken, refreshToken: newRefreshToken };
   }
 

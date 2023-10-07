@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class StudentService {
   constructor(private readonly prismaService: PrismaService) {}
-  async getStudents(id: number | undefined) {
+  async getStudent(id: number | undefined) {
     try {
       return await this.prismaService.student.findUniqueOrThrow({
         where: { id },
@@ -22,6 +22,7 @@ export class StudentService {
               CleaningJobs: true,
             },
           },
+          FeedBack: true,
         },
       });
     } catch (error) {
@@ -30,5 +31,9 @@ export class StudentService {
       }
       throw error;
     }
+  }
+
+  async getStudentCleaningJobsHistory(id: number | undefined) {
+    return `This action returns a #${id} student cleaning jobs history`;
   }
 }

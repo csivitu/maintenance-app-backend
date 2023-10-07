@@ -22,7 +22,6 @@ export class CleaningService {
 
       return await this.prismaService.staff.findMany({
         where: { role: 'cleaner', block },
-        select: { id: true, name: true },
       });
     } catch (error) {
       if (error.name == 'NotFoundError') {
@@ -44,7 +43,7 @@ export class CleaningService {
         select: {
           id: true,
           time: true,
-          Room: { select: { number: true } },
+          Room: { select: { number: true, block: true } },
         },
         orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
       });
@@ -62,13 +61,12 @@ export class CleaningService {
         where: { id },
         select: { block: true },
       });
-
       return await this.prismaService.cleaningJob.findMany({
         where: { Room: { block }, completed: false, NOT: { Staff: null } },
         select: {
           id: true,
           time: true,
-          Room: { select: { number: true } },
+          Room: { select: { number: true, block: true } },
           Staff: { select: { name: true } },
         },
         orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
@@ -93,7 +91,7 @@ export class CleaningService {
         select: {
           id: true,
           time: true,
-          Room: { select: { number: true } },
+          Room: { select: { number: true, block: true } },
           Staff: { select: { name: true } },
         },
         orderBy: [{ time: 'desc' }, { createdAt: 'desc' }],
@@ -108,15 +106,15 @@ export class CleaningService {
 
   async assignJob(id: number, assignJobDto: AssignJobDto) {
     const { jobId, staffId } = assignJobDto;
-
     return await this.prismaService.cleaningJob.update({
       where: { id: jobId },
       data: { Staff: { connect: { id: staffId } } },
       select: {
         id: true,
         time: true,
-        Room: { select: { number: true } },
+        Room: { select: { number: true, block: true } },
         Staff: { select: { name: true } },
+        assigned: true,
       },
     });
   }
