@@ -45,12 +45,10 @@ export class AuthService {
       console.log(this.configService.get('REDIS_PORT'));
 
       this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
-      const otpObject = <otpCache>await this.cacheManager.get(otpId);
-      console.log(otpObject);
       return { otpId };
     } catch (error) {
       if (error.name == 'NotFoundError') {
-        throw new UnauthorizedException('Invalid Email');
+        throw new UnauthorizedException(['Invalid Email']);
       }
       throw error;
     }
@@ -59,7 +57,7 @@ export class AuthService {
   async verifyOtp(otpId: string, otpNew: number) {
     const otpObject = <otpCache>await this.cacheManager.get(otpId);
     if (otpObject === undefined) {
-      throw new UnauthorizedException('Invalid OTP ID');
+      throw new UnauthorizedException(['Invalid OTP ID']);
     }
     const { otp, user } = otpObject;
     if (otpNew === otp) {
@@ -68,13 +66,13 @@ export class AuthService {
       this.cacheManager.set(refreshToken, user, 1000 * 60 * 60 * 24 * 30); //* set for 30 days
       return { accessToken, refreshToken };
     }
-    throw new UnauthorizedException('Invalid OTP');
+    throw new UnauthorizedException(['Invalid OTP']);
   }
 
   async refresh(refreshToken: string) {
     const user = <UserInterface>await this.cacheManager.get(refreshToken);
     if (user === undefined) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException(['Invalid refresh token']);
     }
     this.cacheManager.del(refreshToken);
     const { accessToken, refreshToken: newRefreshToken } =

@@ -21,7 +21,7 @@ export class FeedbackService {
       const data = await this.prismaService.feedBack.findMany();
       return data;
     } catch (error) {
-      throw new NotFoundException('No feedback found');
+      throw new NotFoundException(['No feedback found']);
     }
   }
 
@@ -33,7 +33,7 @@ export class FeedbackService {
         },
       });
     } catch (error) {
-      throw new NotFoundException('No feedback found');
+      throw new NotFoundException(['No feedback found']);
     }
   }
 
@@ -45,7 +45,7 @@ export class FeedbackService {
         },
       });
     } catch (error) {
-      throw new NotFoundException('No feedback found');
+      throw new NotFoundException(['No feedback found']);
     }
   }
 

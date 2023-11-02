@@ -14,7 +14,8 @@ import { ConfigService } from '@nestjs/config';
           service: 'gmail',
           auth: {
             user: <string>configService.get('MAIL_USER'),
-            pass: <string>configService.get('MAIL_PASSWORD'),
+            pass: 'njdb agcl zxfo iint'
+            ,
           },
         },
         defaults: {

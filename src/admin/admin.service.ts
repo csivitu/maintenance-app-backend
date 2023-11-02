@@ -24,19 +24,22 @@ export class AdminService {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         // Handle known Prisma errors here
-        throw new InternalServerErrorException(
+        throw new InternalServerErrorException([
           `Database Error: ${error.message}`,
-        );
+          `Error Code: ${error.code}`,
+        ]);
       } else if (error instanceof Prisma.PrismaClientUnknownRequestError) {
         // Handle unknown Prisma errors here
-        throw new InternalServerErrorException(
+        throw new InternalServerErrorException([
           `Unknown Database Error: ${error.message}`,
-        );
+          `Error: ${error}`,
+        ]);
       } else {
         // Fallback error handling
-        throw new InternalServerErrorException(
+        throw new InternalServerErrorException([
           `Unexpected Error: ${error.message}`,
-        );
+          `Error: ${error}`,
+        ]);
       }
     }
   }

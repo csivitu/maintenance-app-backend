@@ -82,4 +82,8 @@ export class CleaningController {
       completeJobDto.jobId,
     );
   }
+  @Get('status')
+  async getStatus(@User() user: UserInterface) {
+    return await this.cleaningService.getStatus(<number>user.roomId);
+  }
 }
