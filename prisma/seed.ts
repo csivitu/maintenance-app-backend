@@ -9,6 +9,18 @@ async function main() {
     email: `user${index + 1}@vitstudent.ac.in`,
     roomId: index + 1,
   }));
+  // adding users with known emails
+  const emails = ['nilaynath.sharan2021@vitstudent.ac.in'];
+  for (let i = 0; i < emails.length; i++) {
+    const user = await prisma.student.create({
+      data: {
+        name: emails[i].split('@')[0],
+        email: emails[i],
+        roomId: i + 1,
+      },
+    });
+    console.log(user);
+  }
 
   // Create 10 rooms
   const rooms = Array.from({ length: 10 }, (_, index) => ({

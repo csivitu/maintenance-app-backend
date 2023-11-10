@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "JobType" AS ENUM ('cleaning', 'maintenance', 'app', 'other');
+
+-- CreateEnum
 CREATE TYPE "Role" AS ENUM ('superAdmin', 'cleaner', 'cleaningAdmin');
 
 -- CreateTable
@@ -38,11 +41,22 @@ CREATE TABLE "Staff" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "role" "Role" NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'cleaner',
     "phone" TEXT NOT NULL,
     "block" TEXT NOT NULL,
 
     CONSTRAINT "Staff_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FeedBack" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "message" TEXT NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "Job" "JobType" NOT NULL,
+
+    CONSTRAINT "FeedBack_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -59,3 +73,6 @@ ALTER TABLE "CleaningJob" ADD CONSTRAINT "CleaningJob_roomId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "CleaningJob" ADD CONSTRAINT "CleaningJob_staffId_fkey" FOREIGN KEY ("staffId") REFERENCES "Staff"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FeedBack" ADD CONSTRAINT "FeedBack_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
