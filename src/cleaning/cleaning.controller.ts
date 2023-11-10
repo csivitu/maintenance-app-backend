@@ -34,35 +34,35 @@ export class CleaningController {
     );
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Get('cleaners')
   async getCleaners(@User() user: UserInterface) {
     return await this.cleaningService.getCleaners(user.id);
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Get('non-assigned-jobs')
   async getNonAssignedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getNonAssignedJobs(user.id);
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Get('assigned-jobs')
   async getAssignedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getAssignedJobs(user.id);
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Get('completed-jobs')
   async getCompletedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getCompletedJobs(user.id);
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Post('assign-job')
   async assignJob(
