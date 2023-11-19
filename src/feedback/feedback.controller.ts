@@ -47,9 +47,4 @@ export class FeedbackController {
   findFeedbackByStudent(@User() user: UserInterface) {
     return this.feedbackService.findFeedbackByStudent(user.id);
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string, @User() user: UserInterface) {
-    return this.feedbackService.remove(+id, user.id);
-  }
 }

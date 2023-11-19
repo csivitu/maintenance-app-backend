@@ -15,11 +15,11 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-    private readonly jwtService: JwtService,
-    private readonly mailService: MailService,
-    private readonly configService: ConfigService,
+    readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) readonly cacheManager: Cache,
+    readonly jwtService: JwtService,
+    readonly mailService: MailService,
+    readonly configService: ConfigService,
   ) {}
 
   async login(email: string, userType: string) {
@@ -40,12 +40,9 @@ export class AuthService {
       const otpId = randomUUID();
 
       this.mailService.sendUsersOtp(email, otp);
-      console.log(this.configService.get('REDIS_PASSWORD'));
-      console.log(this.configService.get('REDIS_HOST'));
-      console.log(this.configService.get('REDIS_PORT'));
 
       this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
-      return { otpId };
+      return { otpId, userType };
     } catch (error) {
       if (error.name == 'NotFoundError') {
         throw new UnauthorizedException(['Invalid Email']);

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { JobType } from '@prisma/client';
 import { CreateFeedbackDto } from './dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class FeedbackService {
@@ -47,9 +47,5 @@ export class FeedbackService {
     } catch (error) {
       throw new NotFoundException(['No feedback found']);
     }
-  }
-
-  remove(id: number, studentId: number) {
-    return `This action removes a #${id} feedback`;
   }
 }

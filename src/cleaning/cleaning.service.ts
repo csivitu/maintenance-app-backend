@@ -10,7 +10,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CleaningService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(readonly prismaService: PrismaService) {}
 
   //* a room can only have one ongoing cleaning job at a time
   //* check if there is an ongoing job for the room
@@ -101,7 +101,7 @@ export class CleaningService {
         where: { id },
         select: { block: true },
       });
-      return await this.prismaService.cleaningJob.findMany({
+      const response = await this.prismaService.cleaningJob.findMany({
         where: { Room: { block }, completed: false, NOT: { Staff: null } },
         select: {
           id: true,
@@ -111,6 +111,15 @@ export class CleaningService {
         },
         orderBy: [{ time: 'asc' }, { createdAt: 'asc' }],
       });
+      return response.map(({ id, time, Room: { number, block }, Staff }) => ({
+        id,
+        time,
+        room: {
+          number,
+          block,
+        },
+        staff: Staff ? Staff.name : 'Not Assigned',
+      }));
     } catch (error) {
       if (error.name == 'NotFoundError') {
         throw new UnauthorizedException(['Invalid Token']);
@@ -126,7 +135,7 @@ export class CleaningService {
         select: { block: true },
       });
 
-      return await this.prismaService.cleaningJob.findMany({
+      const response = await this.prismaService.cleaningJob.findMany({
         where: { Room: { block }, completed: true },
         select: {
           id: true,
@@ -136,6 +145,15 @@ export class CleaningService {
         },
         orderBy: [{ time: 'desc' }, { createdAt: 'desc' }],
       });
+      return response.map(({ id, time, Room: { number, block }, Staff }) => ({
+        id,
+        time,
+        room: {
+          number,
+          block,
+        },
+        staff: Staff ? Staff.name : 'Not Assigned',
+      }));
     } catch (error) {
       if (error.name == 'NotFoundError') {
         throw new UnauthorizedException(['Invalid Token']);
