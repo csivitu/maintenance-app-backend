@@ -6,6 +6,7 @@ import { JwtGuard } from 'src/auth/guards/auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { adminfindOneDoc } from './responses';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { adminHomePageDoc } from './responses/adminHomePage.respose';
 
 @ApiBearerAuth()
 @ApiTags('Admin')
@@ -15,14 +16,17 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @adminfindOneDoc()
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
+  @UseGuards(RolesGuard)
   @Get()
   findOne(@User() user: UserInterface) {
     return this.adminService.findOne(user.id);
   }
 
+  @adminHomePageDoc()
   @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
-  @Post('admin-home-page')
+  @Get('admin-home-page')
   async AdminHomePage(@User() user: UserInterface) {
     return await this.adminService.adminHomePage(user.id);
   }

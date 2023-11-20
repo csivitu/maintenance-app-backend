@@ -45,14 +45,14 @@ export class AdminService {
       }
     }
   }
+
+  //! Need to optimize it
   async adminHomePage(id: number) {
     try {
-      const { block } = await this.prismaService.staff.findUniqueOrThrow({
+      const { block, name } = await this.prismaService.staff.findUniqueOrThrow({
         where: { id },
-        select: { block: true },
+        select: { block: true, name: true },
       });
-
-      // need to calculate
       // total number of cleaning jobs today
       const totalCleaningJobsToday = await this.prismaService.cleaningJob.count(
         {
@@ -97,30 +97,80 @@ export class AdminService {
                   block,
                 },
               },
-              { time: { gte: getDate(7) } },
+              { time: { gte: getDate(6) } },
               { time: { lte: getEndDate() } },
             ],
           },
         });
-      // create a loop and for create an dict where each key is the date and the value is the number of jobs
-      const totalJobsForTheLast7Days: {
-        [key: string]: { total: number; cleaned: number };
-      } = {};
+      const graphDataForTheLast7Days: {
+        total: number;
+        cleaned: number;
+        date: string;
+      }[] = [];
       for (let i = 0; i < totalCleaningJobsForTheLast7Days.length; i++) {
         const date = totalCleaningJobsForTheLast7Days[i].time.toDateString();
-        if (totalJobsForTheLast7Days[date]) {
-          totalJobsForTheLast7Days[date].total += 1;
+        const index = graphDataForTheLast7Days.findIndex(
+          (item) => item.date === date,
+        );
+        if (index === -1) {
+          graphDataForTheLast7Days.push({
+            total: 1,
+            cleaned: totalCleaningJobsForTheLast7Days[i].completed ? 1 : 0,
+            date,
+          });
         } else {
-          totalJobsForTheLast7Days[date] = { total: 1, cleaned: 0 };
-        }
-        if (totalCleaningJobsForTheLast7Days[i].completed) {
-          totalJobsForTheLast7Days[date].cleaned += 1;
+          graphDataForTheLast7Days[index].total += 1;
+          if (totalCleaningJobsForTheLast7Days[i].completed) {
+            graphDataForTheLast7Days[index].cleaned += 1;
+          }
         }
       }
+      // need to add another check to see if there is any missing date
+      // if there is a missing date then add it to the graphDataForTheLast7Days array and make the values zero
+      if (graphDataForTheLast7Days.length < 7) {
+        const missingDates = [];
+        for (let i = 0; i < 7; i++) {
+          const date = getDate(i).toDateString();
+          const index = graphDataForTheLast7Days.findIndex(
+            (item) => item.date === date,
+          );
+          if (index === -1) {
+            missingDates.push(date);
+          }
+        }
+        for (let i = 0; i < missingDates.length; i++) {
+          graphDataForTheLast7Days.push({
+            total: 0,
+            cleaned: 0,
+            date: missingDates[i],
+          });
+        }
+      }
+      // need to sort the graphDataForTheLast7Days array by date
+      graphDataForTheLast7Days.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
+      // convert the date to day
+      graphDataForTheLast7Days.map((item) => {
+        item.date = new Date(item.date).toLocaleDateString('en-GB', {
+          weekday: 'short',
+        });
+      });
+      // find the maximum number of cleaned jobs & total jobs for the last 7 days
+      const maxCleanedJobsInTheLast7Days = Math.max(
+        ...graphDataForTheLast7Days.map((item) => item.cleaned),
+      );
+      const maxTotalJobsInTheLast7Days = Math.max(
+        ...graphDataForTheLast7Days.map((item) => item.total),
+      );
       return {
+        name,
         totalCleaningJobsToday,
         totalCleaningJobsAssingedToday,
-        totalJobsForTheLast7Days,
+        maxCleanedJobsInTheLast7Days,
+        maxTotalJobsInTheLast7Days,
+        graphDataForTheLast7Days,
       };
     } catch (error) {
       if (error.name == 'NotFoundError') {
