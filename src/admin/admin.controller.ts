@@ -1,4 +1,4 @@
-import { Controller, Get, Post, SetMetadata, UseGuards } from '@nestjs/common';
+import { Controller, Get, SetMetadata, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { User } from 'src/auth/auth.decorator';
 import { UserInterface } from 'src/auth/interfaces/user.interface';

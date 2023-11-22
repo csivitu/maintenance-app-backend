@@ -5,14 +5,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { cleaningJobType, studentDataType } from './interface/student.types';
 import { Prisma } from '@prisma/client';
+import {
+  cleaningJobType,
+  studentDataType,
+} from './interface/student.interface';
 
 @Injectable()
 export class StudentService {
   constructor(private readonly prismaService: PrismaService) {}
   /**
-   *@async getStudent
+   * @async getStudent
    * @description returns the student with the given id
    * @param {number} id the id of the student
    * @returns {Promise<studentDataType | null>} the student with the given id
@@ -47,7 +50,6 @@ export class StudentService {
    * @async getStudentCleaningJobsHistory
    * @description returns the cleaning jobs history of the student with the given id
    * @param {number} id the id of the student
-   * @returns {Promise<cleaningJobType[] | null>} the cleaning jobs history of the student with the given id
    */
   async getStudentCleaningJobsHistory(
     id: number,
@@ -81,6 +83,16 @@ export class StudentService {
               name: true,
             },
           },
+          issuedBy: {
+            select: {
+              name: true,
+            },
+          },
+          confirmedBy: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
       if (!cleaningJobs || cleaningJobs.length === 0) {
@@ -98,6 +110,10 @@ export class StudentService {
             block: cleaningJob.Room.block,
           },
           staff: cleaningJob.Staff ? cleaningJob.Staff.name : 'Not assigned',
+          issuedBy: cleaningJob.issuedBy?.name ? cleaningJob.issuedBy.name : '',
+          confirmedBy: cleaningJob.confirmedBy?.name
+            ? cleaningJob.confirmedBy.name
+            : 'Not confirmed',
         };
       });
     } catch (error) {
@@ -138,11 +154,16 @@ export class StudentService {
     }
   }
 
-  // * needs to return the status of the cleaning job
-  async getStatus(id: number) {
-    return `This is the status of the student with id ${id}`;
-  }
-
+  /**
+   * Handles errors thrown by Prisma.
+   * @param error - The error thrown by Prisma.
+   * @throws {ConflictException} - If a unique constraint would be violated.
+   * @throws {NotFoundException} - If no student is found.
+   * @throws {InternalServerErrorException} - If an unknown database error occurs.
+   * @throws {InternalServerErrorException} - If the database client could not be initialized.
+   * @throws {InternalServerErrorException} - If the database engine crashed.
+   * @throws {Error} - If an unknown error occurs.
+   */
   handleError(error: any) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {

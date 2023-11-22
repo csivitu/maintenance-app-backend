@@ -11,14 +11,15 @@ datasource db {
 }
 
 model Student {
-  id       Int        @id @default(autoincrement())
-  name     String
-  email    String     @unique
-  Room     Room       @relation(fields: [roomId], references: [id])
-  roomId   Int
-  FeedBack FeedBack[]
+  id            Int           @id @default(autoincrement())
+  name          String
+  email         String        @unique
+  Room          Room          @relation(fields: [roomId], references: [id])
+  roomId        Int
+  FeedBack      FeedBack[]
+  issuedJobs    CleaningJob[] @relation("IssuedJobs")
+  confirmedJobs CleaningJob[] @relation("ConfirmedJobs")
 }
-
 model Room {
   id           Int           @id @default(autoincrement())
   number       Int
@@ -28,16 +29,21 @@ model Room {
 }
 
 model CleaningJob {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  time      DateTime @db.Timestamp(0)
-  Room      Room     @relation(fields: [roomId], references: [id])
-  roomId    Int
-  assigned  Boolean  @default(false)
-  completed Boolean  @default(false)
-  Staff     Staff?   @relation(fields: [staffId], references: [id])
-  staffId   Int? 
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  time          DateTime @db.Timestamp(0)
+  Room          Room     @relation(fields: [roomId], references: [id])
+  roomId        Int
+  assigned      Boolean  @default(false)
+  completed     Boolean  @default(false)
+  Staff         Staff?   @relation(fields: [staffId], references: [id])
+  staffId       Int? 
+  issuedBy      Student? @relation("IssuedJobs", fields: [issuedById], references: [id])
+  issuedById    Int? 
+  confirmedBy   Student? @relation("ConfirmedJobs", fields: [confirmedById], references: [id])
+  confirmedById Int? 
 }
+
 
 model Staff {
   id           Int           @id @default(autoincrement())

@@ -10,7 +10,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/auth/auth.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserInterface } from 'src/auth/interfaces/user.interface';
-import { CleaningJobDto } from 'src/student/dto/cleaningJob.dto';
+import { CleaningJobDto } from 'src/cleaning/dto/cleaningJob.dto';
 import { JwtGuard } from '../auth/guards/auth.guard';
 import { CleaningService } from './cleaning.service';
 import { AssignJobDto } from './dto/assignJob.dto';
@@ -31,6 +31,7 @@ export class CleaningController {
     return await this.cleaningService.newJob(
       <number>user.roomId,
       cleaningJobDto.time,
+      <number>user.id,
     );
   }
 
@@ -80,6 +81,7 @@ export class CleaningController {
     return await this.cleaningService.completeJob(
       <number>user.roomId,
       completeJobDto.jobId,
+      <number>user.id,
     );
   }
   @Get('status')
