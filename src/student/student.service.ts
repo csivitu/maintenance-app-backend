@@ -7,6 +7,10 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { CustomError } from 'src/cleaning/interface/cleaning.interface';
+import {
+  studentDataType,
+  cleaningJobType,
+} from './interface/student.interface';
 
 @Injectable()
 export class StudentService {

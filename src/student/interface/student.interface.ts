@@ -1,4 +1,4 @@
-interface studentDataType {
+export interface studentDataType {
   name: string;
   Room: {
     number: number;
@@ -9,7 +9,7 @@ interface studentDataType {
   };
 }
 
-interface cleaningJobType {
+export interface cleaningJobType {
   time: Date;
   block: string;
   room: {

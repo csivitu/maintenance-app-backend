@@ -3,10 +3,12 @@ import {
   NotFoundException,
   InternalServerErrorException,
   UnauthorizedException,
+  ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { getStartDate, getEndDate, getDate } from './utils/helper';
+import { CustomError } from 'src/cleaning/interface/cleaning.interface';
 
 @Injectable()
 export class AdminService {
@@ -24,29 +26,10 @@ export class AdminService {
 
       return user;
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Handle known Prisma errors here
-        throw new InternalServerErrorException([
-          `Database Error: ${error.message}`,
-          `Error Code: ${error.code}`,
-        ]);
-      } else if (error instanceof Prisma.PrismaClientUnknownRequestError) {
-        // Handle unknown Prisma errors here
-        throw new InternalServerErrorException([
-          `Unknown Database Error: ${error.message}`,
-          `Error: ${error}`,
-        ]);
-      } else {
-        // Fallback error handling
-        throw new InternalServerErrorException([
-          `Unexpected Error: ${error.message}`,
-          `Error: ${error}`,
-        ]);
-      }
+      this.handleError(error);
     }
   }
 
-  //! Need to optimize it
   async adminHomePage(id: number) {
     try {
       const { block, name } = await this.prismaService.staff.findUniqueOrThrow({
@@ -54,37 +37,24 @@ export class AdminService {
         select: { block: true, name: true },
       });
       // total number of cleaning jobs today
-      const totalCleaningJobsToday = await this.prismaService.cleaningJob.count(
-        {
-          where: {
-            AND: [
-              {
-                Room: {
-                  block,
-                },
+      const cleaningJobsToday = await this.prismaService.cleaningJob.findMany({
+        where: {
+          AND: [
+            {
+              Room: {
+                block,
               },
-              { time: { gte: getStartDate() } },
-              { time: { lte: getEndDate() } },
-            ],
-          },
+            },
+            { time: { gte: getStartDate() } },
+            { time: { lte: getEndDate() } },
+          ],
         },
-      );
+      });
+      const totalCleaningJobsToday = cleaningJobsToday.length;
       // total number of cleaning jobs assinged today
-      const totalCleaningJobsAssingedToday =
-        await this.prismaService.cleaningJob.count({
-          where: {
-            AND: [
-              {
-                Room: {
-                  block,
-                },
-              },
-              { time: { gte: getStartDate() } },
-              { time: { lte: getEndDate() } },
-              { assigned: true },
-            ],
-          },
-        });
+      const totalCleaningJobsAssingedToday = cleaningJobsToday.filter(
+        (item) => item.completed === true,
+      ).length;
 
       // Need to get the total number of jobs vs cleaned jobs for the last 7 days
       // total jobs for the last 7 days
@@ -173,9 +143,42 @@ export class AdminService {
         graphDataForTheLast7Days,
       };
     } catch (error) {
-      if (error.name == 'NotFoundError') {
-        throw new UnauthorizedException(['Invalid Token']);
+      this.handleError(error);
+    }
+  }
+
+  /**
+   * Handles errors thrown by Prisma.
+   * @param error - The error thrown by Prisma.
+   * @throws {ConflictException} - If a unique constraint would be violated.
+   * @throws {NotFoundException} - If no student is found.
+   * @throws {InternalServerErrorException} - If an unknown database error occurs.
+   * @throws {InternalServerErrorException} - If the database client could not be initialized.
+   * @throws {InternalServerErrorException} - If the database engine crashed.
+   * @throws {Error} - If an unknown error occurs.
+   */
+  handleError(error: CustomError) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (error.code) {
+        case 'P2002':
+          throw new ConflictException(
+            'A unique constraint would be violated on Student. Details: ' +
+              error.meta?.cause,
+          );
+        case 'P2025':
+          throw new NotFoundException('No Student found');
+        default:
+          throw new InternalServerErrorException('Unknown database error');
       }
+    } else if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+      throw new InternalServerErrorException('Unknown database error');
+    } else if (error instanceof Prisma.PrismaClientInitializationError) {
+      throw new InternalServerErrorException(
+        'Could not initialize database client',
+      );
+    } else if (error instanceof Prisma.PrismaClientRustPanicError) {
+      throw new InternalServerErrorException('Database engine crashed');
+    } else {
       throw error;
     }
   }
