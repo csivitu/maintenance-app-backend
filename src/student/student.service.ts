@@ -6,10 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import {
-  cleaningJobType,
-  studentDataType,
-} from './interface/student.interface';
+import { CustomError } from 'src/cleaning/interface/cleaning.interface';
 
 @Injectable()
 export class StudentService {
@@ -35,10 +32,8 @@ export class StudentService {
                   name: true,
                 },
               },
-              CleaningJobs: true,
             },
           },
-          FeedBack: true,
         },
       });
     } catch (error) {
@@ -164,7 +159,7 @@ export class StudentService {
    * @throws {InternalServerErrorException} - If the database engine crashed.
    * @throws {Error} - If an unknown error occurs.
    */
-  handleError(error: any) {
+  handleError(error: CustomError) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {
         case 'P2002':
