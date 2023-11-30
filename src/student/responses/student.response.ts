@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { type } from 'os';
 
 class StudentInterface {
   @ApiProperty()
@@ -26,7 +25,7 @@ class RoomInterface {
   @ApiProperty({ type: StudentInterface, isArray: true })
   Student: StudentInterface[];
 
-  @ApiProperty({ type: CleaningJobInterface, isArray: true})
+  @ApiProperty({ type: CleaningJobInterface, isArray: true })
   CleaningJobs: CleaningJobInterface[];
 }
 

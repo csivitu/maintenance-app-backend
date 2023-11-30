@@ -7,6 +7,8 @@ import { CleaningModule } from './cleaning/cleaning.module';
 import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
+import { FeedbackModule } from './feedback/feedback.module';
+import { AdminModule } from './admin/admin.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,6 +35,8 @@ import { ConfigService } from '@nestjs/config';
     StudentModule,
     CleaningModule,
     MailModule,
+    FeedbackModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

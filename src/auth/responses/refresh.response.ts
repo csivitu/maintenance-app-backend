@@ -49,4 +49,3 @@ export const BadRefreshRequestResponse = {
   type: BadRefreshRequestInterface,
   status: 400,
 };
-

@@ -18,9 +18,7 @@ class InvalidEmailInterface {
 
 class BadRequestInterface {
   @ApiProperty({
-    default: [
-      'Invalid email address format. Only Vit Student Email addresses allowed are allowed.',
-    ],
+    default: ['Invalid email address format.'],
   })
   message: Array<string>;
 

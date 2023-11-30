@@ -1,12 +1,10 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/auth.guard';
 import { StudentService } from './student.service';
 import { User } from '../auth/auth.decorator';
 import { UserInterface } from 'src/auth/interfaces/user.interface';
-import { CleaningJobDto } from './dto/cleaningJob.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { StudentModule } from './student.module';
-import { StudentSuccessfulResponse } from './responses/student.response';
+import { StudentSuccessfulResponse, cleaningJobGetDoc } from './responses';
 
 @ApiBearerAuth()
 @ApiTags('Student')
@@ -17,7 +15,18 @@ export class StudentController {
 
   @ApiResponse(StudentSuccessfulResponse)
   @Get()
-  async getStudents(@User() user: UserInterface) {
-    return await this.studentService.getStudents(user.id);
+  async getStudent(@User() user: UserInterface) {
+    return await this.studentService.getStudent(user.id);
+  }
+
+  @cleaningJobGetDoc()
+  @Get(`cleaning-jobs-history`)
+  async getStudentCleaningJobsHistory(@User() user: UserInterface) {
+    return await this.studentService.getStudentCleaningJobsHistory(user.id);
+  }
+
+  @Get(`roomates`)
+  async getRoomates(@User() user: UserInterface) {
+    return await this.studentService.getRoomates(user.id);
   }
 }

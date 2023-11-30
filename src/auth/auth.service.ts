@@ -15,11 +15,11 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-    private readonly jwtService: JwtService,
-    private readonly mailService: MailService,
-    private readonly configService: ConfigService,
+    readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) readonly cacheManager: Cache,
+    readonly jwtService: JwtService,
+    readonly mailService: MailService,
+    readonly configService: ConfigService,
   ) {}
 
   async login(email: string, userType: string) {
@@ -42,10 +42,10 @@ export class AuthService {
       this.mailService.sendUsersOtp(email, otp);
 
       this.cacheManager.set(otpId, { otp, user }, 1000 * 60 * 5); // set for 5 minutes
-      return { otpId };
+      return { otpId, userType };
     } catch (error) {
       if (error.name == 'NotFoundError') {
-        throw new UnauthorizedException('Invalid Email');
+        throw new UnauthorizedException(['Invalid Email']);
       }
       throw error;
     }
@@ -54,27 +54,27 @@ export class AuthService {
   async verifyOtp(otpId: string, otpNew: number) {
     const otpObject = <otpCache>await this.cacheManager.get(otpId);
     if (otpObject === undefined) {
-      throw new UnauthorizedException('Invalid OTP ID');
+      throw new UnauthorizedException(['Invalid OTP ID']);
     }
     const { otp, user } = otpObject;
     if (otpNew === otp) {
       this.cacheManager.del(otpId);
       const { accessToken, refreshToken } = await this.generateToken(user);
-      this.cacheManager.set(refreshToken, user, 1000 * 60 * 60 * 24 * 30); // set for 30 days
+      this.cacheManager.set(refreshToken, user, 1000 * 60 * 60 * 24 * 30); //* set for 30 days
       return { accessToken, refreshToken };
     }
-    throw new UnauthorizedException('Invalid OTP');
+    throw new UnauthorizedException(['Invalid OTP']);
   }
 
   async refresh(refreshToken: string) {
     const user = <UserInterface>await this.cacheManager.get(refreshToken);
     if (user === undefined) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException(['Invalid refresh token']);
     }
     this.cacheManager.del(refreshToken);
     const { accessToken, refreshToken: newRefreshToken } =
       await this.generateToken(user);
-    this.cacheManager.set(newRefreshToken, user, 60 * 60 * 24 * 30 * 1000); // set for 30 days
+    this.cacheManager.set(newRefreshToken, user, 60 * 60 * 24 * 30 * 1000); //* set for 30 days
     return { accessToken, refreshToken: newRefreshToken };
   }
 

@@ -10,7 +10,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/auth/auth.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserInterface } from 'src/auth/interfaces/user.interface';
-import { CleaningJobDto } from 'src/student/dto/cleaningJob.dto';
+import { CleaningJobDto } from 'src/cleaning/dto/cleaningJob.dto';
 import { JwtGuard } from '../auth/guards/auth.guard';
 import { CleaningService } from './cleaning.service';
 import { AssignJobDto } from './dto/assignJob.dto';
@@ -31,38 +31,39 @@ export class CleaningController {
     return await this.cleaningService.newJob(
       <number>user.roomId,
       cleaningJobDto.time,
+      <number>user.id,
     );
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Get('cleaners')
   async getCleaners(@User() user: UserInterface) {
     return await this.cleaningService.getCleaners(user.id);
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Get('non-assigned-jobs')
   async getNonAssignedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getNonAssignedJobs(user.id);
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Get('assigned-jobs')
   async getAssignedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getAssignedJobs(user.id);
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Get('completed-jobs')
   async getCompletedJobs(@User() user: UserInterface) {
     return await this.cleaningService.getCompletedJobs(user.id);
   }
 
-  @SetMetadata('roles', ['cleaningAdmin'])
+  @SetMetadata('roles', ['cleaningAdmin', 'superAdmin'])
   @UseGuards(RolesGuard)
   @Post('assign-job')
   async assignJob(
@@ -80,6 +81,11 @@ export class CleaningController {
     return await this.cleaningService.completeJob(
       <number>user.roomId,
       completeJobDto.jobId,
+      <number>user.id,
     );
+  }
+  @Get('status')
+  async getStatus(@User() user: UserInterface) {
+    return await this.cleaningService.getStatus(<number>user.roomId);
   }
 }
