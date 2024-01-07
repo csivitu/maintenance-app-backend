@@ -13,6 +13,14 @@ async function main() {
   const emails = [
     'nilaynath.sharan2021@vitstudent.ac.in',
     'sankalp.2021@vitstudent.ac.in',
+    'bhavya.ambardar2021@vitstudent.ac.in',
+    'armaan.indani2022@vitstudent.ac.in',
+    'anubhav.aryan2021@vitstudent.ac.in',
+    'sarimmoin.warsi2021@vitstudent.ac.in',
+    'ansu.banerjee2022@vitstudent.ac.in',
+    'preynsh.thukral2022@vitstudent.ac.in',
+    'aryan.kumar2022b@vitstudent.ac.in',
+    'siddharth.riyer2021@vitstudent.ac.in',
   ];
   for (let i = 0; i < emails.length; i++) {
     const user = await prisma.student.create({
