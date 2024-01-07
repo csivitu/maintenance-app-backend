@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
-  UnauthorizedException,
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -53,7 +52,7 @@ export class AdminService {
       const totalCleaningJobsToday = cleaningJobsToday.length;
       // total number of cleaning jobs assinged today
       const totalCleaningJobsAssingedToday = cleaningJobsToday.filter(
-        (item) => item.completed === true,
+        (cleaningJobToday) => cleaningJobToday.completed === true,
       ).length;
 
       // Need to get the total number of jobs vs cleaned jobs for the last 7 days

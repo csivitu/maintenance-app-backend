@@ -10,7 +10,10 @@ async function main() {
     roomId: index + 1,
   }));
   // adding users with known emails
-  const emails = ['nilaynath.sharan2021@vitstudent.ac.in'];
+  const emails = [
+    'nilaynath.sharan2021@vitstudent.ac.in',
+    'sankalp.2021@vitstudent.ac.in',
+  ];
   for (let i = 0; i < emails.length; i++) {
     const user = await prisma.student.create({
       data: {
